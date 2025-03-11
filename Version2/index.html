@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <style>
+      :where([class^="ri-"])::before { content: "\f3c2"; }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+      }
+      .neumorphic {
+          box-shadow: 8px 8px 15px rgba(163, 177, 198, 0.6),
+                      -8px -8px 15px rgba(255, 255, 255, 0.8);
+      }
+      .neumorphic-inset {
+          box-shadow: inset 4px 4px 8px rgba(163, 177, 198, 0.4),
+                      inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+      }
+      .cell-hover:hover:not(.marked) {
+          background: rgba(255, 255, 255, 0.8);
+          box-shadow: inset 2px 2px 4px rgba(163, 177, 198, 0.2),
+                      inset -2px -2px 4px rgba(255, 255, 255, 0.4);
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4F46E5",
+              secondary: "#E5E7EB",
+            },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="min-h-screen bg-gray-50 flex flex-col items-center py-8 px-4">
+    <div class="w-full max-w-xl">
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-['Pacifico'] text-primary mb-2">
+          Tic Tac Toe
+        </h1>
+        <div class="flex items-center justify-center gap-4">
+          <button
+            id="soundToggle"
+            class="neumorphic p-3 rounded-full cursor-pointer"
+          >
+            <i class="ri-volume-up-line text-gray-600 text-xl"></i>
+          </button>
+          <button
+            id="resetGame"
+            class="neumorphic px-6 py-2 rounded-button text-primary font-medium cursor-pointer"
+          >
+            Reset Game
+          </button>
+        </div>
+      </div>
+
+      <div class="flex justify-between mb-8 gap-4">
+        <div class="flex-1 neumorphic p-4 rounded-lg">
+          <div class="flex items-center gap-2 mb-2">
+            <input
+              type="text"
+              id="player1Name"
+              value="Player X"
+              class="bg-transparent border-none outline-none font-medium text-gray-700"
+            />
+            <i class="ri-edit-line text-gray-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-primary" id="player1Score">0</div>
+        </div>
+        <div class="flex-1 neumorphic p-4 rounded-lg">
+          <div class="flex items-center gap-2 mb-2">
+            <input
+              type="text"
+              id="player2Name"
+              value="Player O"
+              class="bg-transparent border-none outline-none font-medium text-gray-700"
+            />
+            <i class="ri-edit-line text-gray-400"></i>
+          </div>
+          <div class="text-2xl font-bold text-gray-500" id="player2Score">
+            0
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="turnIndicator"
+        class="text-center mb-6 text-lg font-medium text-gray-700"
+      >
+        Player X's Turn
+      </div>
+
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+        <div
+          class="aspect-square neumorphic rounded-lg cell-hover cursor-pointer"
+        ></div>
+      </div>
+    </div>
+
+    <div
+      id="winModal"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+    >
+      <div class="bg-white rounded-lg p-8 text-center">
+        <h2 class="text-2xl font-bold mb-4" id="winnerText"></h2>
+        <button
+          onclick="resetGame()"
+          class="neumorphic px-6 py-2 rounded-button text-primary font-medium cursor-pointer"
+        >
+          Play Again
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let currentPlayer = "X";
+      let gameBoard = ["", "", "", "", "", "", "", "", ""];
+      let gameActive = true;
+      let soundEnabled = true;
+      let scores = { X: 0, O: 0 };
+
+      const cells = document.querySelectorAll(".cell-hover");
+      const turnIndicator = document.getElementById("turnIndicator");
+      const winModal = document.getElementById("winModal");
+      const winnerText = document.getElementById("winnerText");
+      const soundToggle = document.getElementById("soundToggle");
+      const player1Score = document.getElementById("player1Score");
+      const player2Score = document.getElementById("player2Score");
+      cells.forEach((cell, index) => {
+        cell.addEventListener("click", () => handleCellClick(cell, index));
+      });
+      function handleCellClick(cell, index) {
+        if (gameBoard[index] !== "" || !gameActive) return;
+
+        gameBoard[index] = currentPlayer;
+        cell.innerHTML = `<div class="flex items-center justify-center h-full text-4xl font-bold ${currentPlayer === "X" ? "text-primary" : "text-gray-500"}">${currentPlayer}</div>`;
+        cell.classList.add("marked");
+
+        if (checkWin()) {
+          const winner = document.getElementById(
+            currentPlayer === "X" ? "player1Name" : "player2Name",
+          ).value;
+          scores[currentPlayer]++;
+          updateScores();
+          showWinModal(`${winner} Wins!`);
+          gameActive = false;
+          return;
+        }
+
+        if (gameBoard.every((cell) => cell !== "")) {
+          showWinModal("It's a Draw!");
+          gameActive = false;
+          return;
+        }
+
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        updateTurnIndicator();
+      }
+
+      function checkWin() {
+        const winPatterns = [
+          [0, 1, 2],
+          [3, 4, 5],
+          [6, 7, 8],
+          [0, 3, 6],
+          [1, 4, 7],
+          [2, 5, 8],
+          [0, 4, 8],
+          [2, 4, 6],
+        ];
+
+        return winPatterns.some((pattern) => {
+          return pattern.every((index) => {
+            return gameBoard[index] === currentPlayer;
+          });
+        });
+      }
+
+      function updateTurnIndicator() {
+        const playerName = document.getElementById(
+          currentPlayer === "X" ? "player1Name" : "player2Name",
+        ).value;
+        turnIndicator.textContent = `${playerName}'s Turn`;
+      }
+
+      function showWinModal(text) {
+        winnerText.textContent = text;
+        winModal.classList.remove("hidden");
+      }
+
+      function updateScores() {
+        player1Score.textContent = scores.X;
+        player2Score.textContent = scores.O;
+      }
+
+      function resetGame() {
+        gameBoard = ["", "", "", "", "", "", "", "", ""];
+        gameActive = true;
+        currentPlayer = "X";
+        cells.forEach((cell) => {
+          cell.innerHTML = "";
+          cell.classList.remove("marked");
+        });
+        updateTurnIndicator();
+        winModal.classList.add("hidden");
+      }
+
+      document.getElementById("resetGame").addEventListener("click", () => {
+        resetGame();
+        scores = { X: 0, O: 0 };
+        updateScores();
+      });
+
+      soundToggle.addEventListener("click", () => {
+        soundEnabled = !soundEnabled;
+        soundToggle.innerHTML = `<i class="ri-volume-${soundEnabled ? "up" : "mute"}-line text-gray-600 text-xl"></i>`;
+      });
+      document
+        .getElementById("player1Name")
+        .addEventListener("change", updateTurnIndicator);
+      document
+        .getElementById("player2Name")
+        .addEventListener("change", updateTurnIndicator);
+    </script>
+  </body>
+</html>
