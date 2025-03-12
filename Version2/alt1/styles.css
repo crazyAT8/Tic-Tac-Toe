@@ -1,0 +1,137 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9fafb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 16px;
+  }
+  
+  .container {
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  .header {
+    margin-bottom: 16px;
+  }
+  
+  h1 {
+    font-size: 24px;
+    color: #4F46E5;
+    font-family: 'Pacifico', cursive;
+  }
+  
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  
+  .button {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .button:hover {
+    background: #f3f4f6;
+  }
+  
+  .icon-button {
+    border-radius: 50%;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .scoreboard {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  
+  .player {
+    background: #fff;
+    padding: 8px;
+    border-radius: 8px;
+    width: 45%;
+    text-align: center;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .name-input {
+    border: none;
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4F46E5;
+  }
+  
+  .turn-indicator {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 16px;
+  }
+  
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .cell {
+    width: 100px;
+    height: 100px;
+    background: #fff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #4F46E5;
+    cursor: pointer;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s ease;
+  }
+  
+  .cell:hover {
+    background: rgba(79, 70, 229, 0.1);
+  }
+  
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal.hidden {
+    display: none;
+  }
+  
+  .modal-content {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
