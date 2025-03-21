@@ -1,0 +1,17 @@
+{
+  "name": "tic-tac-toe-vue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "vue.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "vue": "^3.3.0",
+    "vue-router": "^4.2.0"
+  }
+}
