@@ -1,0 +1,4 @@
+/* Add global styles or import Tailwind CSS here */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
