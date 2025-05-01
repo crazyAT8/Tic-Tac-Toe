@@ -159,12 +159,14 @@
                     <input type="text" value="Player X" id="player1Name" />
                     <div id="score1" class="score">0</div>
                     <div class="turn-indicator" id="turn1">Your turn</div>
+                    <div class="turn-counter" id="turnCount1">Turns: 0</div>
                 </div>
 
                 <div class="player-panel">
                     <input type="text" value="Player O" id="player2Name" />
                     <div id="score2" class="score">0</div>
                     <div class="turn-indicator" id="turn2">Waiting...</div>
+                    <div class="turn-counter" id="turnCount2">Turns: 0</div>
                 </div>
             </div>
 
@@ -198,91 +200,92 @@
 
         <script>
             let currentPlayer = "X";
-    let gameBoard = ["", "", "", "", "", "", "", "", ""];
-    let gameActive = true;
-    let soundEnabled = true;
+            let gameBoard = ["", "", "", "", "", "", "", "", ""];
+            let gameActive = true;
+            let soundEnabled = true;
 
-    const winPatterns = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
+            const winPatterns = [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [0, 3, 6],
+                [1, 4, 7],
+                [2, 5, 8],
+                [0, 4, 8],
+                [2, 4, 6],
+            ];
 
-    const scores = { X: 0, O: 0 };
-    const moveHistory = { X: [], O: [] };
+            const scores = { X: 0, O: 0 };
+            const moveHistory = { X: [], O: [] };
+            let turnCount = { X: 0, O: 0 };
 
-    const cells = document.querySelectorAll(".cell");
+            const cells = document.querySelectorAll(".cell");
 
-    cells.forEach((cell, index) => {
-        cell.addEventListener("click", () => makeMove(cell, index));
-    });
+            cells.forEach((cell, index) => {
+                cell.addEventListener("click", () => makeMove(cell, index));
+            });
 
-    function makeMove(cell, index) {
-        if (gameBoard[index] === "" && gameActive) {
-            // Check if player already has 3 moves
-            if (moveHistory[currentPlayer].length === 3) {
-                const removeIndex = moveHistory[currentPlayer].shift();
-                gameBoard[removeIndex] = "";
-                cells[removeIndex].textContent = "";
+            function makeMove(cell, index) {
+                if (gameBoard[index] === "" && gameActive) {
+                    // Check if player already has 3 moves
+                    if (moveHistory[currentPlayer].length === 3) {
+                        const removeIndex = moveHistory[currentPlayer].shift();
+                        gameBoard[removeIndex] = "";
+                        cells[removeIndex].textContent = "";
+                    }
+
+                    // Place the move
+                    gameBoard[index] = currentPlayer;
+                    moveHistory[currentPlayer].push(index);
+                    cell.textContent = currentPlayer;
+                    cell.style.color = currentPlayer === "X" ? "#57B5E7" : "#8DD3C7";
+
+                    if (checkWinner(currentPlayer)) {
+                        gameActive = false;
+                        updateScore(currentPlayer);
+                        alert(`${currentPlayer} wins!`);
+                        return;
+                    }
+
+                    togglePlayer();
+                }
             }
 
-            // Place the move
-            gameBoard[index] = currentPlayer;
-            moveHistory[currentPlayer].push(index);
-            cell.textContent = currentPlayer;
-            cell.style.color = currentPlayer === "X" ? "#57B5E7" : "#8DD3C7";
-
-            if (checkWinner(currentPlayer)) {
-                gameActive = false;
-                updateScore(currentPlayer);
-                alert(`${currentPlayer} wins!`);
-                return;
+            function togglePlayer() {
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                document.getElementById("turn1").textContent = currentPlayer === "X" ? "Your turn" : "Waiting...";
+                document.getElementById("turn2").textContent = currentPlayer === "O" ? "Your turn" : "Waiting...";
             }
 
-            togglePlayer();
-        }
-    }
+            function checkWinner(player) {
+                return winPatterns.some((pattern) => {
+                    return pattern.every((index) => gameBoard[index] === player);
+                });
+            }
 
-    function togglePlayer() {
-        currentPlayer = currentPlayer === "X" ? "O" : "X";
-        document.getElementById("turn1").textContent = currentPlayer === "X" ? "Your turn" : "Waiting...";
-        document.getElementById("turn2").textContent = currentPlayer === "O" ? "Your turn" : "Waiting...";
-    }
+            function updateScore(player) {
+                scores[player]++;
+                document.getElementById(`score${player === "X" ? 1 : 2}`).textContent = scores[player];
+            }
 
-    function checkWinner(player) {
-        return winPatterns.some((pattern) => {
-            return pattern.every((index) => gameBoard[index] === player);
-        });
-    }
+            function resetGame() {
+                gameBoard = ["", "", "", "", "", "", "", "", ""];
+                gameActive = true;
+                moveHistory.X = [];
+                moveHistory.O = [];
+                cells.forEach((cell) => {
+                    cell.textContent = "";
+                });
+                currentPlayer = "X";
+                document.getElementById("turn1").textContent = "Your turn";
+                document.getElementById("turn2").textContent = "Waiting...";
+            }
 
-    function updateScore(player) {
-        scores[player]++;
-        document.getElementById(`score${player === "X" ? 1 : 2}`).textContent = scores[player];
-    }
+            document.getElementById("resetBtn").addEventListener("click", resetGame);
 
-    function resetGame() {
-        gameBoard = ["", "", "", "", "", "", "", "", ""];
-        gameActive = true;
-        moveHistory.X = [];
-        moveHistory.O = [];
-        cells.forEach((cell) => {
-            cell.textContent = "";
-        });
-        currentPlayer = "X";
-        document.getElementById("turn1").textContent = "Your turn";
-        document.getElementById("turn2").textContent = "Waiting...";
-    }
-
-    document.getElementById("resetBtn").addEventListener("click", resetGame);
-
-    document.getElementById("soundToggle").addEventListener("click", () => {
-        soundEnabled = !soundEnabled;
-    });
+            document.getElementById("soundToggle").addEventListener("click", () => {
+                soundEnabled = !soundEnabled;
+            });
         </script>
     </body>
 </html>
